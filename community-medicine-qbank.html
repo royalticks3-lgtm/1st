@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BHMS Community Medicine – Question Bank</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d1a;
+    --surface: #16162a;
+    --surface2: #1e1e38;
+    --border: #2d2d4e;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --dim: #6b7280;
+    --accent: #6d28d9;
+    --accent-light: #a78bfa;
+  }
+
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    font-family: 'Source Serif 4', Georgia, serif;
+    color: var(--text);
+    padding-bottom: 60px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(160deg,#1a1040 0%,#2d1b6e 50%,#1a1040 100%);
+    padding: 28px 20px 22px;
+    text-align: center;
+    border-bottom: 2px solid #6d28d9;
+  }
+  .header-sub {
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: var(--accent-light);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    color: #fff;
+    font-size: clamp(17px,5vw,26px);
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+  .header-desc {
+    color: #c4b5fd;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 3px 11px;
+  }
+  .legend-label { font-weight: 700; font-size: 12px; }
+  .legend-desc  { color: var(--accent-light); font-size: 11px; }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 16px 0;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    padding: 10px 22px;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    color: #9ca3af;
+    font-weight: 400;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: 'Source Serif 4', Georgia, serif;
+    transition: all 0.18s;
+  }
+  .tab-btn.active {
+    color: #fff;
+    font-weight: 700;
+  }
+  .tab-count { margin-left: 6px; font-size: 11px; opacity: 0.8; }
+
+  /* ── CONTROLS ── */
+  .controls {
+    max-width: 760px;
+    margin: 14px auto 0;
+    padding: 0 14px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .search-input {
+    flex: 1;
+    min-width: 150px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 14px;
+    outline: none;
+    font-family: 'Source Serif 4', Georgia, serif;
+  }
+  .filter-btn {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: #9ca3af;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Source Serif 4', Georgia, serif;
+    transition: all 0.15s;
+  }
+  .filter-btn.active { color: #fff; border-width: 2px; }
+
+  /* ── STAT BAR ── */
+  .stat-bar {
+    max-width: 760px;
+    margin: 10px auto 0;
+    padding: 0 14px;
+  }
+  .stat-bar-inner {
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 9px 14px;
+    color: var(--muted);
+    font-size: 12px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .stat-bar-inner strong { color: var(--text); }
+  .stat-sort { margin-left: auto; color: #6d28d9; }
+
+  /* ── CARDS ── */
+  .cards {
+    max-width: 760px;
+    margin: 12px auto 0;
+    padding: 0 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .card {
+    border-radius: 12px;
+    padding: 13px 15px;
+    cursor: pointer;
+    transition: box-shadow 0.15s;
+    border-width: 2px;
+    border-style: solid;
+  }
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .card-left { flex: 1; }
+  .card-tags { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 7px; }
+  .tag {
+    color: #fff;
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .card-topic { font-weight: 700; font-size: 14.5px; color: #1e293b; line-height: 1.4; }
+  .card-arrow { color: #64748b; font-size: 18px; user-select: none; padding-top: 2px; }
+
+  .card-body {
+    margin-top: 11px;
+    padding-top: 11px;
+    border-top-style: dashed;
+    border-top-width: 1px;
+  }
+  .card-body-label { font-size: 12px; color: #475569; margin-bottom: 7px; font-weight: 600; }
+  .years-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+  .year-chip {
+    background: #fff;
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 11.5px;
+    color: #1e293b;
+    font-weight: 500;
+    border-width: 1px;
+    border-style: solid;
+  }
+
+  .empty { text-align: center; color: #6b7280; padding: 40px; font-size: 15px; }
+
+  .footer { text-align: center; margin-top: 28px; color: #4b5563; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-sub">Tamil Nadu Dr. MGR Medical University</div>
+  <h1>BHMS – Community Medicine</h1>
+  <div class="header-desc">Repeated Questions Bank · Sub Codes 1255 &amp; 1524 · 2009–2025</div>
+  <div class="legend">
+    <div class="legend-item"><span class="legend-label" style="color:#ef4444">🔥 Very High</span><span class="legend-desc">6+</span></div>
+    <div class="legend-item"><span class="legend-label" style="color:#f97316">⚡ High</span><span class="legend-desc">4–5</span></div>
+    <div class="legend-item"><span class="legend-label" style="color:#eab308">⭐ Medium</span><span class="legend-desc">3×</span></div>
+    <div class="legend-item"><span class="legend-label" style="color:#22c55e">✓ Low</span><span class="legend-desc">1–2</span></div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs" id="tabs"></div>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <input class="search-input" id="searchInput" placeholder="🔍  Search topic..." oninput="render()" />
+  <button class="filter-btn" data-filter="all" onclick="setFilter('all')">All</button>
+  <button class="filter-btn" data-filter="very_high" onclick="setFilter('very_high')">🔥 6+</button>
+  <button class="filter-btn" data-filter="high" onclick="setFilter('high')">⚡ 4–5</button>
+  <button class="filter-btn" data-filter="medium" onclick="setFilter('medium')">⭐ 3×</button>
+  <button class="filter-btn" data-filter="low" onclick="setFilter('low')">✓ 1–2</button>
+</div>
+
+<!-- STAT BAR -->
+<div class="stat-bar">
+  <div class="stat-bar-inner" id="statBar"></div>
+</div>
+
+<!-- CARDS -->
+<div class="cards" id="cards"></div>
+
+<div class="footer">Tap any card to see year-wise appearances · Corrected &amp; verified data · 2009–2025</div>
+
+<script>
+const DATA = {
+  "15 Marks": [
+    { topic:"Indicators of Health", years:["Aug 2009 (1255)","Feb 2012 (1255)","Feb 2015 (1255)","Feb 2019 (1255)","Jun 2024 (1524)"], count:5 },
+    { topic:"Family Planning / Contraceptive Methods", years:["Feb 2009 (1255)","Aug 2010 (1255)","Feb 2012 (1255)","Feb 2014 (1255)","Feb 2019 (1255)"], count:5 },
+    { topic:"Purification of Water / Large Scale Water Treatment", years:["Feb 2010 (1255)","Feb 2014 (1255)","Aug 2018 (1255)","Feb 2022 (1524)","Jun 2024 (1524)"], count:5 },
+    { topic:"Disaster Management (Earthquake / Flood)", years:["Feb 2009 (1255)","Aug 2013 (1255)","Aug 2014 (1255)","Sep 2021 (1255)","May 2022 (1524)"], count:5 },
+    { topic:"Epidemiology & Cohort / Analytical Study", years:["Aug 2015 (1255)","Feb 2020 (1255)","Dec 2020 (1255)","May 2022 (1524)","Jan 2024 (1524)"], count:5 },
+    { topic:"Nutritional Problems in Public Health / India", years:["Aug 2010 (1255)","Feb 2016 (1255)","Feb 2020 (1255)","Dec 2020 (1255)"], count:4 },
+    { topic:"ESI Act – Scope, Benefits, Administration", years:["Feb 2017 (1255)","Feb 2022 (1255)","Dec 2022 (1524)","Jan 2024 (1524)"], count:4 },
+    { topic:"Methods of Health Education", years:["Feb 2009 (1255)","Aug 2018 (1255)","Feb 2022 (1524)"], count:3 },
+    { topic:"Excreta / Sewage Disposal Methods", years:["Aug 2012 (1255)","Feb 2016 (1255)","Aug 2016 (1255)"], count:3 },
+    { topic:"Health Planning in India", years:["Feb 2017 (1255)","Aug 2019 (1255)"], count:2 },
+    { topic:"Acute Diarrhoeal Disease & Management", years:["Aug 2014 (1255)","Dec 2020 (1524)"], count:2 },
+    { topic:"Sewage Treatment Plant / Modern STP", years:["Dec 2020 (1524)","Oct 2025 (1524)"], count:2 },
+    { topic:"Epidemiology of AIDS / STDs", years:["Aug 2016 (1255)","Feb 2022 (1524)"], count:2 },
+    { topic:"Hospital Waste Management", years:["Aug 2017 (1255)"], count:1 },
+    { topic:"National Rural Health Mission (NRHM)", years:["Dec 2022 (1524)"], count:1 },
+    { topic:"Occupational Hazards / Pneumoconiosis", years:["Feb 2015 (1255)"], count:1 },
+    { topic:"Experimental Epidemiology", years:["Oct 2025 (1524)"], count:1 },
+    { topic:"Cancer – Epidemiology & Prevention (NCD)", years:["Jul 2025 (1524)"], count:1 },
+    { topic:"Nutritional Anaemia / Deficiency Disorders", years:["Jul 2025 (1524)"], count:1 },
+  ],
+  "5 Marks": [
+    { topic:"Low Birth Weight", years:["Feb 2009 (1255)","Feb 2012 (1255)","Aug 2015 (1255)","Sep 2021 (1255)","May 2022 (1255)","May 2022 (1524)","Jan 2024 (1524)"], count:7 },
+    { topic:"Pasteurization of Milk", years:["Aug 2010 (1255)","Aug 2013 (1255)","Feb 2015 (1255)","Feb 2019 (1255)","Aug 2019 (1255)","Dec 2020 (1524)","Jul 2025 (1524)"], count:7 },
+    { topic:"Oxidation Pond", years:["Feb 2009 (1255)","Feb 2014 (1255)","Aug 2016 (1255)","Feb 2019 (1255)","Jun 2023 (1524)"], count:5 },
+    { topic:"Levels of Prevention", years:["Aug 2010 (1255)","Feb 2020 (1255)","Dec 2020 (1255)","May 2022 (1524)","Jul 2025 (1524)"], count:5 },
+    { topic:"Hardness of Water", years:["Aug 2009 (1255)","Aug 2012 (1255)","Feb 2016 (1255)","May 2022 (1255)","Jul 2025 (1524)"], count:5 },
+    { topic:"Obesity", years:["Aug 2010 (1255)","Feb 2013 (1255)","Feb 2014 (1255)","Feb 2019 (1255)","Jun 2024 (1524)"], count:5 },
+    { topic:"Bhore Committee", years:["Aug 2009 (1255)","Aug 2017 (1255)","Feb 2020 (1255)","Dec 2020 (1255)","Jul 2025 (1524)"], count:5 },
+    { topic:"WHO – Structure & Functions", years:["Feb 2013 (1255)","Aug 2015 (1255)","Aug 2018 (1255)","May 2022 (1255)","Jun 2023 (1524)"], count:5 },
+    { topic:"Growth Chart", years:["Aug 2010 (1255)","Aug 2014 (1255)","Feb 2017 (1255)","Aug 2018 (1255)","May 2022 (1255)"], count:5 },
+    { topic:"Positive Health", years:["Feb 2012 (1255)","Feb 2013 (1255)","Aug 2016 (1255)","Feb 2019 (1255)","Sep 2021 (1255)"], count:5 },
+    { topic:"Vaccines / Types of Vaccines", years:["Aug 2010 (1255)","Aug 2014 (1255)","Dec 2020 (1524)","Oct 2025 (1524)"], count:4 },
+    { topic:"Lathyrism", years:["Feb 2013 (1255)","Aug 2018 (1255)","Feb 2022 (1524)","Oct 2025 (1524)"], count:4 },
+    { topic:"Functions of PHC", years:["Feb 2013 (1255)","Feb 2014 (1255)","May 2022 (1524)","Jun 2023 (1524)"], count:4 },
+    { topic:"Vitamin A Deficiency", years:["Aug 2010 (1255)","Aug 2015 (1255)","Dec 2022 (1524)","Jul 2025 (1524)"], count:4 },
+    { topic:"Immunization Schedule / National Schedule", years:["Aug 2016 (1255)","May 2022 (1524)","Jun 2023 (1524)"], count:3 },
+    { topic:"Silicosis", years:["Aug 2015 (1255)","Aug 2018 (1255)","Dec 2022 (1524)"], count:3 },
+    { topic:"Dengue – Types & Prevention / Control", years:["Aug 2015 (1255)","Feb 2022 (1524)","Jan 2024 (1524)"], count:3 },
+    { topic:"Pulse Polio Immunization", years:["Aug 2013 (1255)","Feb 2016 (1255)","May 2022 (1524)"], count:3 },
+    { topic:"Demographic Cycle", years:["Feb 2010 (1255)","May 2022 (1255)","Dec 2022 (1524)"], count:3 },
+    { topic:"NRHM – Plan of Action", years:["Feb 2015 (1255)","Feb 2022 (1255)","Jul 2025 (1524)"], count:3 },
+    { topic:"Mudaliar Committee", years:["Aug 2014 (1255)","Aug 2019 (1255)","Jun 2024 (1524)"], count:3 },
+    { topic:"Vision 2020", years:["Feb 2016 (1255)","Feb 2022 (1524)","Jul 2025 (1524)"], count:3 },
+    { topic:"Pneumoconiosis", years:["Feb 2020 (1255)","Dec 2020 (1255)","Jul 2025 (1524)"], count:3 },
+    { topic:"ORS / Oral Rehydration", years:["Feb 2010 (1255)","Feb 2015 (1255)","Jul 2025 (1524)"], count:3 },
+    { topic:"Antenatal Care", years:["Feb 2017 (1255)","Dec 2022 (1524)"], count:2 },
+    { topic:"Cold Chain", years:["Feb 2009 (1255)","Feb 2015 (1255)"], count:2 },
+    { topic:"Occupational Hazards", years:["Feb 2018 (1255)","Feb 2022 (1524)"], count:2 },
+    { topic:"Air Pollutants", years:["Feb 2016 (1255)","May 2022 (1524)"], count:2 },
+    { topic:"Natural History of Disease", years:["Aug 2019 (1255)","Jun 2024 (1524)"], count:2 },
+    { topic:"Nosocomial / Hospital-Acquired Infection", years:["Aug 2013 (1255)","Dec 2022 (1524)"], count:2 },
+    { topic:"Infant Mortality Rate", years:["Dec 2020 (1524)","Oct 2025 (1524)"], count:2 },
+    { topic:"Composting", years:["Feb 2015 (1255)","May 2022 (1524)"], count:2 },
+    { topic:"Prevalence", years:["Feb 2013 (1255)","Jul 2025 (1524)"], count:2 },
+    { topic:"Iodine Deficiency / IDD Control", years:["Oct 2025 (1524)"], count:1 },
+    { topic:"School Health Programme", years:["Aug 2017 (1255)"], count:1 },
+    { topic:"ICDS Scheme", years:["Feb 2019 (1255)"], count:1 },
+    { topic:"Screening Criteria / Types", years:["Aug 2019 (1255)"], count:1 },
+    { topic:"Epidemiological Triad", years:["Feb 2010 (1255)"], count:1 },
+    { topic:"Iceberg of Disease", years:["Aug 2013 (1255)"], count:1 },
+    { topic:"Balanced Diet", years:["Aug 2014 (1255)"], count:1 },
+    { topic:"Food Fortification", years:["Aug 2016 (1255)"], count:1 },
+    { topic:"Disinfectants / Disinfection", years:["Feb 2018 (1255)"], count:1 },
+    { topic:"Ventilation / Types of Ventilation", years:["Feb 2018 (1255)"], count:1 },
+    { topic:"Sanitation Barrier", years:["May 2022 (1255)"], count:1 },
+  ],
+  "2 Marks": [
+    { topic:"Herd Immunity", years:["Aug 2012 (1255)","Feb 2019 (1255)","Feb 2020 (1255)","Dec 2020 (1255)","Feb 2022 (1524)","Dec 2022 (1524)"], count:6 },
+    { topic:"Cold Chain", years:["Aug 2009 (1255)","Aug 2010 (1255)","Aug 2013 (1255)","Aug 2019 (1255)","Feb 2018 (1255)","Dec 2022 (1524)"], count:6 },
+    { topic:"Emerging / Re-emerging Diseases", years:["Aug 2009 (1255)","Feb 2010 (1255)","Aug 2013 (1255)","Feb 2019 (1255)","Feb 2020 (1255)","Oct 2025 (1524)"], count:6 },
+    { topic:"Zoonoses / Zoonosis", years:["Feb 2013 (1255)","Aug 2018 (1255)","Feb 2019 (1255)","Feb 2020 (1255)","Dec 2020 (1255)","Jul 2025 (1524)"], count:6 },
+    { topic:"Define Health", years:["Feb 2009 (1255)","Aug 2009 (1255)","Dec 2022 (1524)","Jun 2023 (1524)","Jan 2024 (1524)"], count:5 },
+    { topic:"Koplik's Spots", years:["Aug 2010 (1255)","Aug 2012 (1255)","Feb 2018 (1255)","Jun 2023 (1524)","Jan 2024 (1524)"], count:5 },
+    { topic:"Quarantine", years:["Aug 2009 (1255)","Aug 2010 (1255)","Aug 2013 (1255)","Aug 2014 (1255)","Dec 2020 (1524)"], count:5 },
+    { topic:"Balanced Diet", years:["Aug 2010 (1255)","Aug 2012 (1255)","Aug 2018 (1255)","May 2022 (1255)","May 2022 (1524)"], count:5 },
+    { topic:"Eligible Couple", years:["Feb 2010 (1255)","Aug 2010 (1255)","Aug 2013 (1255)","Aug 2014 (1255)","Feb 2018 (1255)"], count:5 },
+    { topic:"Comfort Zone", years:["Feb 2009 (1255)","Aug 2015 (1255)","Feb 2017 (1255)","May 2022 (1524)","Jun 2024 (1524)"], count:5 },
+    { topic:"Weaning", years:["Aug 2010 (1255)","Feb 2012 (1255)","Feb 2022 (1524)","Jan 2024 (1524)"], count:4 },
+    { topic:"Blocked Flea", years:["Aug 2009 (1255)","Aug 2013 (1255)","Feb 2019 (1255)","Feb 2022 (1524)"], count:4 },
+    { topic:"Pie Chart", years:["Aug 2012 (1255)","Feb 2018 (1255)","Feb 2022 (1524)","Jan 2024 (1524)"], count:4 },
+    { topic:"Secondary Attack Rate", years:["Feb 2010 (1255)","Feb 2014 (1255)","Aug 2015 (1255)","Feb 2022 (1524)"], count:4 },
+    { topic:"Sanitation Barrier", years:["Feb 2014 (1255)","May 2022 (1255)","May 2022 (1524)","Jun 2024 (1524)"], count:4 },
+    { topic:"Ergonomics", years:["Feb 2015 (1255)","Feb 2017 (1255)","May 2022 (1524)","Jul 2025 (1524)"], count:4 },
+    { topic:"Incubation Period", years:["Aug 2013 (1255)","Feb 2018 (1255)","Dec 2022 (1524)"], count:3 },
+    { topic:"Sullivan's Index", years:["Aug 2010 (1255)","Aug 2015 (1255)","Jul 2025 (1524)"], count:3 },
+    { topic:"Antiseptic", years:["Feb 2012 (1255)","Feb 2013 (1255)","Jun 2023 (1524)"], count:3 },
+    { topic:"Aflatoxin", years:["Feb 2013 (1255)","Feb 2016 (1255)","Oct 2025 (1524)"], count:3 },
+    { topic:"ORS / Oral Rehydration Salt", years:["Feb 2013 (1255)","Feb 2018 (1255)","May 2022 (1524)"], count:3 },
+    { topic:"Mid Day Meal Scheme", years:["Feb 2009 (1255)","Feb 2022 (1524)","Jan 2024 (1524)"], count:3 },
+    { topic:"Iceberg of Disease", years:["Feb 2010 (1255)","Aug 2016 (1255)","Feb 2018 (1255)"], count:3 },
+    { topic:"Isolation", years:["Feb 2016 (1255)","Aug 2016 (1255)","Feb 2022 (1524)"], count:3 },
+    { topic:"Re-emerging Diseases", years:["Feb 2010 (1255)","Feb 2014 (1255)","Dec 2022 (1524)"], count:3 },
+    { topic:"Pictogram / Pictograph", years:["Feb 2012 (1255)","Feb 2013 (1255)","Feb 2016 (1255)"], count:3 },
+    { topic:"Prevalence", years:["Aug 2021 (1255)","May 2022 (1255)","Oct 2025 (1524)"], count:3 },
+    { topic:"Census", years:["Aug 2013 (1255)","Feb 2019 (1255)","Jun 2024 (1524)"], count:3 },
+    { topic:"Target Couple", years:["Feb 2010 (1255)","Feb 2014 (1255)","Feb 2019 (1255)"], count:3 },
+    { topic:"Anganwadi Worker", years:["Aug 2009 (1255)","Feb 2016 (1255)","Jan 2024 (1524)"], count:3 },
+    { topic:"Zoogleal Layer", years:["Dec 2020 (1524)","Oct 2025 (1524)"], count:2 },
+    { topic:"Phleomorphism / Pleomorphism", years:["Dec 2020 (1524)","Jun 2023 (1524)"], count:2 },
+    { topic:"Pearl Index", years:["Feb 2015 (1255)","Jan 2024 (1524)"], count:2 },
+    { topic:"Rooming In", years:["Dec 2020 (1524)","Dec 2022 (1524)"], count:2 },
+    { topic:"UNICEF", years:["Feb 2009 (1255)","Dec 2020 (1524)"], count:2 },
+    { topic:"Triage", years:["Feb 2015 (1255)","Dec 2022 (1524)"], count:2 },
+    { topic:"BMI", years:["Feb 2017 (1255)","Jul 2025 (1524)"], count:2 },
+    { topic:"DDT", years:["Jun 2023 (1524)","Jun 2024 (1524)"], count:2 },
+    { topic:"Relative Risk", years:["Aug 2016 (1255)","Aug 2018 (1255)"], count:2 },
+    { topic:"Superchlorination", years:["Feb 2016 (1255)","Jan 2024 (1524)"], count:2 },
+    { topic:"Mean & Median", years:["Sep 2021 (1255)","Dec 2022 (1524)"], count:2 },
+    { topic:"ASHA", years:["Aug 2013 (1255)","Oct 2025 (1524)"], count:2 },
+    { topic:"Sewage (Define)", years:["Dec 2020 (1524)","Oct 2025 (1524)"], count:2 },
+    { topic:"Vitamin A / Bitot's Spot", years:["Aug 2015 (1255)","Oct 2025 (1524)"], count:2 },
+    { topic:"Secular Trend", years:["Aug 2016 (1255)","Jun 2024 (1524)"], count:2 },
+    { topic:"BCG Vaccine", years:["Feb 2013 (1255)","Dec 2022 (1524)"], count:2 },
+    { topic:"Life Expectancy", years:["Feb 2017 (1255)","Jun 2024 (1524)"], count:2 },
+    { topic:"Infant Mortality Rate", years:["Feb 2010 (1255)","May 2022 (1524)"], count:2 },
+    { topic:"Byssinosis", years:["Aug 2018 (1255)","Jul 2025 (1524)"], count:2 },
+    { topic:"Overcrowding", years:["Feb 2013 (1255)","Aug 2019 (1255)"], count:2 },
+    { topic:"Bonding", years:["Dec 2020 (1524)","Jun 2024 (1524)"], count:2 },
+    { topic:"Paris Green", years:["Feb 2016 (1255)","Aug 2019 (1255)"], count:2 },
+    { topic:"Condom", years:["Jun 2023 (1524)"], count:1 },
+    { topic:"ILO", years:["Dec 2020 (1524)"], count:1 },
+    { topic:"Dietary Fibre", years:["Aug 2018 (1255)"], count:1 },
+    { topic:"Beriberi", years:["Feb 2013 (1255)"], count:1 },
+    { topic:"Marasmus", years:["Feb 2015 (1255)"], count:1 },
+    { topic:"PAP Smear", years:["Feb 2017 (1255)"], count:1 },
+    { topic:"BMR / Basal Metabolic Rate", years:["Aug 2019 (1255)"], count:1 },
+    { topic:"Annual Parasite Index", years:["Feb 2020 (1255)"], count:1 },
+    { topic:"DALY & HALE", years:["Dec 2020 (1524)"], count:1 },
+    { topic:"Scatter Diagram", years:["Sep 2021 (1255)"], count:1 },
+    { topic:"Human Development Index", years:["Dec 2022 (1524)"], count:1 },
+  ],
+};
+
+const TAB_META = {
+  "15 Marks": { color:"#7c3aed", emoji:"📝" },
+  "5 Marks":  { color:"#0369a1", emoji:"📋" },
+  "2 Marks":  { color:"#047857", emoji:"✏️" },
+};
+
+function repeatMeta(count) {
+  if (count >= 6) return { bg:"#fef2f2", border:"#ef4444", tag:"#dc2626", label:"🔥 Very High" };
+  if (count >= 4) return { bg:"#fff7ed", border:"#f97316", tag:"#ea580c", label:"⚡ High" };
+  if (count >= 3) return { bg:"#fefce8", border:"#eab308", tag:"#ca8a04", label:"⭐ Medium" };
+  return           { bg:"#f0fdf4", border:"#22c55e", tag:"#16a34a", label:"✓ Low" };
+}
+
+let activeTab    = "15 Marks";
+let activeFilter = "all";
+let expanded     = {};
+
+// Build tabs
+const tabsEl = document.getElementById("tabs");
+Object.entries(TAB_META).forEach(([t, m]) => {
+  const btn = document.createElement("button");
+  btn.className = "tab-btn" + (t === activeTab ? " active" : "");
+  btn.id = "tab-" + t;
+  btn.innerHTML = `${m.emoji} ${t}<span class="tab-count">(${DATA[t].length})</span>`;
+  btn.onclick = () => switchTab(t);
+  tabsEl.appendChild(btn);
+});
+
+function switchTab(t) {
+  document.getElementById("tab-" + activeTab).classList.remove("active");
+  document.getElementById("tab-" + activeTab).style.borderColor = "";
+  document.getElementById("tab-" + activeTab).style.background  = "";
+  document.getElementById("tab-" + activeTab).style.color       = "";
+
+  activeTab = t;
+  activeFilter = "all";
+  expanded = {};
+  document.getElementById("searchInput").value = "";
+
+  const btn = document.getElementById("tab-" + t);
+  btn.classList.add("active");
+  styleActiveTab();
+  styleActiveFilter();
+  render();
+}
+
+function styleActiveTab() {
+  Object.entries(TAB_META).forEach(([t, m]) => {
+    const btn = document.getElementById("tab-" + t);
+    if (t === activeTab) {
+      btn.style.borderColor = m.color;
+      btn.style.background  = m.color;
+      btn.style.color       = "#fff";
+    } else {
+      btn.style.borderColor = "";
+      btn.style.background  = "";
+      btn.style.color       = "";
+    }
+  });
+}
+
+function setFilter(f) {
+  activeFilter = f;
+  expanded = {};
+  styleActiveFilter();
+  render();
+}
+
+function styleActiveFilter() {
+  const color = TAB_META[activeTab].color;
+  document.querySelectorAll(".filter-btn").forEach(btn => {
+    const f = btn.dataset.filter;
+    if (f === activeFilter) {
+      btn.style.borderColor = color;
+      btn.style.borderWidth = "2px";
+      btn.style.background  = color;
+      btn.style.color       = "#fff";
+    } else {
+      btn.style.borderColor = "";
+      btn.style.borderWidth = "";
+      btn.style.background  = "";
+      btn.style.color       = "";
+    }
+  });
+}
+
+function getFiltered() {
+  const search = document.getElementById("searchInput").value.toLowerCase();
+  return DATA[activeTab]
+    .filter(q => {
+      if (activeFilter === "very_high") return q.count >= 6;
+      if (activeFilter === "high")      return q.count >= 4 && q.count < 6;
+      if (activeFilter === "medium")    return q.count === 3;
+      if (activeFilter === "low")       return q.count <= 2;
+      return true;
+    })
+    .filter(q => q.topic.toLowerCase().includes(search))
+    .sort((a, b) => b.count - a.count);
+}
+
+function render() {
+  const filtered = getFiltered();
+  const meta = TAB_META[activeTab];
+  const totalCount = DATA[activeTab].reduce((s,q) => s + q.count, 0);
+
+  // stat bar
+  document.getElementById("statBar").innerHTML =
+    `<span>Showing <strong>${filtered.length}</strong> topics</span>
+     <span>Total appearances <strong>${totalCount}</strong></span>
+     <span class="stat-sort">Sorted by frequency ↓</span>`;
+
+  // cards
+  const cardsEl = document.getElementById("cards");
+  if (filtered.length === 0) {
+    cardsEl.innerHTML = `<div class="empty">No topics found for this filter.</div>`;
+    return;
+  }
+
+  cardsEl.innerHTML = filtered.map((q, i) => {
+    const rm = repeatMeta(q.count);
+    const open = expanded[i];
+    return `
+      <div class="card" data-i="${i}"
+        style="background:${rm.bg};border-color:${rm.border};${open ? `box-shadow:0 4px 16px ${rm.border}44` : ''}">
+        <div class="card-top">
+          <div class="card-left">
+            <div class="card-tags">
+              <span class="tag" style="background:${rm.tag}">${rm.label}</span>
+              <span class="tag" style="background:${meta.color}">${q.count}× repeated</span>
+            </div>
+            <div class="card-topic">${q.topic}</div>
+          </div>
+          <div class="card-arrow">${open ? "▲" : "▼"}</div>
+        </div>
+        ${open ? `
+        <div class="card-body" style="border-top-color:${rm.border}">
+          <div class="card-body-label">📅 Appeared in:</div>
+          <div class="years-wrap">
+            ${q.years.map(y => `<span class="year-chip" style="border-color:${rm.border}">${y}</span>`).join("")}
+          </div>
+        </div>` : ""}
+      </div>`;
+  }).join("");
+
+  cardsEl.querySelectorAll(".card").forEach(card => {
+    card.onclick = () => {
+      const i = +card.dataset.i;
+      expanded[i] = !expanded[i];
+      render();
+    };
+  });
+}
+
+// Init
+styleActiveTab();
+styleActiveFilter();
+render();
+</script>
+</body>
+</html>
